@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { mesub } from '@/lib/mesub';
 import { getSession } from '@/lib/session';
 import { ManageDesk, RentDesk } from '@/components/desk-buttons';
+import { OpenInWallet } from '@/components/open-in-wallet';
 
 // Reads the session cookie and asks Mesub on every request: never prerendered.
 export const instant = false;
@@ -28,6 +29,7 @@ export default async function DeskPage() {
                         <h1>It&apos;s yours, <em>{name}.</em></h1>
                         <p className="lead">5 USDC an hour from your wallet, until you cancel or Nov 12 at 23:59. Sit down and ship something.</p>
                         <div className="actions"><ManageDesk /></div>
+                        <OpenInWallet />
                     </>
                 ) : (
                     <>
@@ -35,6 +37,7 @@ export default async function DeskPage() {
                         <h1>No desk yet, <em>{name}.</em></h1>
                         <p className="lead">5 USDC an hour and it is yours. Just paid? Give it a few seconds and reload.</p>
                         <div className="actions"><RentDesk /></div>
+                        <OpenInWallet />
                     </>
                 )}
             </main>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { signOut } from './login/actions';
 import { RentDesk } from '@/components/desk-buttons';
+import { OpenInWallet } from '@/components/open-in-wallet';
 
 // Reads the session cookie on every request: never prerendered.
 export const instant = false;
@@ -43,6 +44,7 @@ export default async function Home() {
                         ) : (
                             <div className="actions"><Link className="btn" href="/login">Rent the desk</Link></div>
                         )}
+                        <OpenInWallet />
                     </aside>
                 </section>
 

@@ -90,3 +90,8 @@ h1 em{font-style:normal;background:linear-gradient(90deg,#ff7a59,#a66bff);-webki
 .demo-body .ask{margin-top:18px;padding-top:16px;border-top:1px solid rgb(0 0 0 / 6%);color:var(--text);font-weight:500}
 .demo-body .ask a{color:var(--blue);text-decoration:none;font-weight:600}
 .demo-body .ask a:hover{text-decoration:underline}
+.open-wallet{margin-top:18px;padding-top:16px;border-top:1px solid rgb(0 0 0 / 8%);text-align:left}
+.open-wallet p{margin:0;font-size:14px;color:var(--muted)}
+.open-wallet-row{display:flex;gap:10px;margin:12px 0 8px}
+.open-wallet-row .btn{flex:1;height:44px;font-size:15px;white-space:nowrap}
+.open-wallet .open-wallet-note{font-size:12px}
