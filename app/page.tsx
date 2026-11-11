@@ -27,7 +27,7 @@ export default async function Home() {
                         <dl>
                             <dt>Paid from</dt><dd>your Solana wallet</dd>
                             <dt>Signatures</dt><dd>one, ever</dd>
-                            <dt>Cancel</dt><dd>any time, here or on Mesub</dd>
+                            <dt>Cancel</dt><dd>any time, here or on <a className="mesub" href="https://mesub.io">Mesub</a></dd>
                         </dl>
                         {session ? (
                             <>
@@ -49,20 +49,20 @@ export default async function Home() {
                 <div className="grid">
                     <div className="cell glass"><div className="k">01</div><h3>Sign once</h3><p>Approve the rental in your wallet. That is the only signature, ever.</p></div>
                     <div className="cell glass"><div className="k">02</div><h3>Pay as you sit</h3><p>Every hour, 5 USDC goes from your wallet to mine. Never more: the price is locked on chain.</p></div>
-                    <div className="cell glass"><div className="k">03</div><h3>Leave whenever</h3><p>Cancel right here, or from <a href="https://mesub.io/subscriptions">My subscriptions on Mesub</a>. Nobody has to approve it.</p></div>
+                    <div className="cell glass"><div className="k">03</div><h3>Leave whenever</h3><p>Cancel right here, or from <a href="https://mesub.io/subscriptions">My subscriptions on <span className="mesub">Mesub</span></a>. Nobody has to approve it.</p></div>
                 </div>
 
                 <section className="section glass" id="mesub">
                     <div>
                         <p className="eyebrow">About this demo</p>
-                        <h2>This desk is a live demo of Mesub.</h2>
+                        <h2>This desk is a live demo of <a className="mesub" href="https://mesub.io">Mesub</a>.</h2>
                     </div>
                     <div>
-                        <p><strong>Mesub is subscription billing for apps on Solana.</strong> A user approves a plan once from their own wallet. Every renewal is then pulled on schedule, retried when the wallet runs short, and paid straight into the merchant&apos;s wallet. Mesub never holds the money.</p>
+                        <p><strong><a className="mesub" href="https://mesub.io">Mesub</a> is subscription billing for apps on Solana.</strong> A user approves a plan once from their own wallet. Every renewal is then pulled on schedule, retried when the wallet runs short, and paid straight into the merchant&apos;s wallet. <a className="mesub" href="https://mesub.io">Mesub</a> never holds the money.</p>
                         <p>It is built on the Solana Foundation&apos;s audited subscriptions program, and ships with an API, SDKs for Node and React, webhooks, a dashboard, and an MCP server so an AI agent can set up billing for you.</p>
                         <p>Nothing here is simulated: renting this desk runs on Solana mainnet, with real USDC, through the same widget and API any app can use today.</p>
                         <ul className="links">
-                            <li><a href="https://mesub.io">mesub.io</a></li>
+                            <li><a className="mesub" href="https://mesub.io">mesub.io</a></li>
                             <li><a href="https://docs.mesub.io">Documentation</a></li>
                             <li><a href="https://medium.com/@emiledubdart/real-subscriptions-on-solana-a-builders-guide-bbb077f4c274">Read: Real subscriptions on Solana, a builder&apos;s guide</a></li>
                             <li><a href="https://x.com/mesub_io">Follow @mesub_io on X</a></li>
@@ -82,7 +82,7 @@ export default async function Home() {
                 </section>
 
                 <footer className="foot">
-                    <span>Powered by <a href="https://mesub.io">mesub.io</a></span>
+                    <span>Powered by <a className="mesub" href="https://mesub.io">Mesub</a></span>
                     <span>Solana mainnet · USDC · non-custodial</span>
                 </footer>
             </main>

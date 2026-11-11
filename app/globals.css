@@ -65,3 +65,11 @@ h1 em{font-style:normal;background:linear-gradient(90deg,#ff7a59,#a66bff);-webki
 .links a{color:var(--blue);text-decoration:none;font-weight:500;font-size:16px}
 .links a:hover{text-decoration:underline}
 .cell p a{color:var(--blue);text-decoration:none}
+.mesub{color:#f46036 !important;font-weight:600;text-decoration:none}
+.mesub:hover{text-decoration:underline}
+.section{padding:30px;gap:28px}
+.section h2{font-size:26px}
+.section p{font-size:15px;line-height:1.55}
+.section p + p{margin-top:10px}
+.links{margin-top:16px;gap:6px}
+.links a{font-size:14px}
