@@ -9,7 +9,7 @@ function walletLinks(url: string) {
     const page = encodeURIComponent(url);
     const ref = encodeURIComponent(new URL(url).origin);
     return [
-        { name: 'Phantom', href: `https://phantom.app/ul/browse/${page}?ref=${ref}` },
+        { name: 'Phantom', href: `https://phantom.com/ul/browse/${page}?ref=${ref}` },
         { name: 'Solflare', href: `https://solflare.com/ul/v1/browse/${page}?ref=${ref}` },
     ];
 }
