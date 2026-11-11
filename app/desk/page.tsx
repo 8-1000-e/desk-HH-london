@@ -7,7 +7,7 @@ import { ManageDesk, RentDesk } from '@/components/desk-buttons';
 // Reads the session cookie and asks Mesub on every request: never prerendered.
 export const instant = false;
 
-// The renter's desk, gated on the server. A wrong slug or key throws on purpose.
+// The tenant's desk, gated on the server. A wrong slug or key throws on purpose.
 export default async function DeskPage() {
     const session = await getSession();
     if (!session) redirect('/login');
@@ -15,25 +15,29 @@ export default async function DeskPage() {
     const renting = await mesub.hasAccess({ external_id: session.userId }, 'desk');
     const name = session.userId.replace(/^user_/, '');
 
-    if (!renting) {
-        return (
-            <main className="wrap">
-                <p className="kicker">Desk</p>
-                <h1>No desk yet, {name}.<br /><span>Grab one for 5 USDC an hour.</span></h1>
-                <div className="actions"><RentDesk /></div>
-                <p className="note">Just paid? Reload in a few seconds.</p>
-                <Link className="back" href="/">Back</Link>
-            </main>
-        );
-    }
-
     return (
-        <main className="wrap">
-            <p className="kicker">Your desk</p>
-            <h1>It&apos;s yours, {name}.<br /><span>Sit down and ship.</span></h1>
-            <p className="lead">5 USDC every hour, straight from your wallet, until you cancel or the rental ends on Nov 12 at 23:59.</p>
-            <div className="actions"><ManageDesk /></div>
-            <Link className="back" href="/">Back</Link>
-        </main>
+        <>
+            <header className="top glass">
+                <span><b>Desk 01</b> · London hacker house</span>
+                <Link href="/">Back</Link>
+            </header>
+            <main className="wrap solo">
+                {renting ? (
+                    <>
+                        <p className="eyebrow">Your desk</p>
+                        <h1>It&apos;s yours, <em>{name}.</em></h1>
+                        <p className="lead">5 USDC an hour from your wallet, until you cancel or Nov 12 at 23:59. Sit down and ship something.</p>
+                        <div className="actions"><ManageDesk /></div>
+                    </>
+                ) : (
+                    <>
+                        <p className="eyebrow">Not rented yet</p>
+                        <h1>No desk yet, <em>{name}.</em></h1>
+                        <p className="lead">5 USDC an hour and it is yours. Just paid? Give it a few seconds and reload.</p>
+                        <div className="actions"><RentDesk /></div>
+                    </>
+                )}
+            </main>
+        </>
     );
 }
