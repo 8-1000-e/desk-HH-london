@@ -17,19 +17,22 @@ export default async function DeskPage() {
 
     return (
         <>
-            <div className="bar"><span>Desk Rental Ltd.</span><Link href="/">Back to the listing</Link></div>
-            <main className="wrap">
+            <header className="top">
+                <span><b>Desk 01</b> · London hacker house</span>
+                <Link href="/">Back</Link>
+            </header>
+            <main className="wrap solo">
                 {renting ? (
                     <>
-                        <div className="sign">Occupied<small>by {name}, a paying tenant</small></div>
-                        <h1>Congrats, {name}.<br /><em>You are now a tenant.</em></h1>
-                        <p className="lead">5 USDC leaves your wallet every hour until you cancel or the lease ends (Nov 12, 23:59). Sit down. Ship something. Make it worth it.</p>
+                        <p className="eyebrow">Your desk</p>
+                        <h1>It&apos;s yours, <em>{name}.</em></h1>
+                        <p className="lead">5 USDC an hour from your wallet, until you cancel or Nov 12 at 23:59. Sit down and ship something.</p>
                         <div className="actions"><ManageDesk /></div>
                     </>
                 ) : (
                     <>
-                        <div className="sign">Nice try<small>this desk is for paying tenants</small></div>
-                        <h1>No lease, no desk,<br /><em>{name}.</em></h1>
+                        <p className="eyebrow">Not rented yet</p>
+                        <h1>No desk yet, <em>{name}.</em></h1>
                         <p className="lead">5 USDC an hour and it is yours. Just paid? Give it a few seconds and reload.</p>
                         <div className="actions"><RentDesk /></div>
                     </>

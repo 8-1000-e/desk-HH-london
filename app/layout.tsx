@@ -3,7 +3,7 @@ import { MesubRoot } from "@/components/mesub-root";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Desk for rent",
+  title: "Desk 01, London",
   description: "Rent a desk at the London hacker house",
 };
 
