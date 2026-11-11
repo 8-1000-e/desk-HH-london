@@ -67,6 +67,7 @@ export default async function Home() {
                             <li><a href="https://medium.com/@emiledubdart/real-subscriptions-on-solana-a-builders-guide-bbb077f4c274">Read: Real subscriptions on Solana, a builder&apos;s guide</a></li>
                             <li><a href="https://x.com/mesub_io">Follow @mesub_io on X</a></li>
                         </ul>
+                        <p className="ask">Wanna learn more about Mesub? DM me on <a href="https://t.me/emil_dbs">Telegram @emil_dbs</a> or <a href="https://x.com/ft_gring0">X @ft_gring0</a>.</p>
                     </div>
                 </details>
 

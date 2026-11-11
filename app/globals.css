@@ -87,3 +87,6 @@ h1 em{font-style:normal;background:linear-gradient(90deg,#ff7a59,#a66bff);-webki
 @keyframes demo-in{from{opacity:0;transform:translateY(-4px)}}
 @media (prefers-reduced-motion:reduce){.demo-body{animation:none}.demo .more::after{transition:none}}
 @media (max-width:600px){.demo summary{flex-direction:column;align-items:flex-start;gap:8px;padding:20px}.demo-body{padding:16px 20px 22px}}
+.demo-body .ask{margin-top:18px;padding-top:16px;border-top:1px solid rgb(0 0 0 / 6%);color:var(--text);font-weight:500}
+.demo-body .ask a{color:var(--blue);text-decoration:none;font-weight:600}
+.demo-body .ask a:hover{text-decoration:underline}
