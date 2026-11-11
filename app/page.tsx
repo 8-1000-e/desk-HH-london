@@ -58,7 +58,7 @@ export default async function Home() {
                         <span className="more">Learn more</span>
                     </summary>
                     <div className="demo-body">
-                        <p><strong><a className="mesub" href="https://mesub.io">Mesub</a> is subscription billing for apps on Solana.</strong> A user approves a plan once from their own wallet. Every renewal is then pulled on schedule, retried when the wallet runs short, and paid straight into the merchant&apos;s wallet. <a className="mesub" href="https://mesub.io">Mesub</a> never holds the money.</p>
+                        <p><strong>Mesub is subscription billing for apps on Solana.</strong> A user approves a plan once from their own wallet. Every renewal is then pulled on schedule, retried when the wallet runs short, and paid straight into the merchant&apos;s wallet. Mesub never holds the money.</p>
                         <p>It is built on the Solana Foundation&apos;s audited subscriptions program, and ships with an API, SDKs for Node and React, webhooks, a dashboard, and an MCP server so an AI agent can set up billing for you.</p>
                         <p>Nothing here is simulated: renting this desk runs on Solana mainnet, with real USDC, through the same widget and API any app can use today.</p>
                         <ul className="links">
