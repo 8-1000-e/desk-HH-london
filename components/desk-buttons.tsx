@@ -7,11 +7,11 @@ export function RentDesk() {
     const router = useRouter();
     return (
         <SubscribeButton plan="desk" onSubscribed={() => router.push('/desk')}>
-            Rent a desk
+            Rent the desk
         </SubscribeButton>
     );
 }
 
 export function ManageDesk() {
-    return <ManageButton plan="desk">Manage my rental</ManageButton>;
+    return <ManageButton plan="desk">Manage my lease</ManageButton>;
 }

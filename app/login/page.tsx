@@ -2,13 +2,16 @@ import { signIn } from './actions';
 
 export default function LoginPage() {
     return (
-        <main className="wrap">
-            <p className="kicker">Sign in</p>
-            <h1>Who&apos;s renting?<br /><span>Your name is enough.</span></h1>
-            <form action={signIn} className="login">
-                <input name="name" placeholder="your name" autoComplete="off" required />
-                <button className="primary" type="submit">Continue</button>
-            </form>
-        </main>
+        <>
+            <div className="bar"><span>Desk Rental Ltd.</span><span>Tenant screening</span></div>
+            <main className="wrap">
+                <div className="sign">Tenant screening<small>very strict. we check nothing.</small></div>
+                <h1>Who wants the desk?</h1>
+                <form action={signIn} className="login">
+                    <input name="name" placeholder="your name" autoComplete="off" required />
+                    <button className="btn" type="submit">Apply</button>
+                </form>
+            </main>
+        </>
     );
 }
