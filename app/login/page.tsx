@@ -3,7 +3,7 @@ import { signIn } from './actions';
 export default function LoginPage() {
     return (
         <>
-            <header className="top"><span><b>Desk 01</b> · London hacker house</span><span>Sign in</span></header>
+            <header className="top glass"><span><b>Desk 01</b> · London hacker house</span><span>Sign in</span></header>
             <main className="wrap solo">
                 <p className="eyebrow">Before the desk</p>
                 <h1>What&apos;s your <em>name?</em></h1>

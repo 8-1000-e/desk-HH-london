@@ -17,7 +17,7 @@ export default async function DeskPage() {
 
     return (
         <>
-            <header className="top">
+            <header className="top glass">
                 <span><b>Desk 01</b> · London hacker house</span>
                 <Link href="/">Back</Link>
             </header>
