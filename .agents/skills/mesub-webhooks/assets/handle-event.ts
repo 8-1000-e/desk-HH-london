@@ -1,0 +1,177 @@
+// What to do with an event once its signature is verified: drop a repeat, record the work, apply access.
+// Copy next to the webhook route. It imports nothing but the SDK's types.
+import type { MesubEvent, RenewalUpcomingDetail, WebhookEvent } from '@mesub/node';
+
+// The subscription an event is about, as it stood when the event was written.
+type Subscription = WebhookEvent['data'];
+
+// Slow work an event calls for (a mail, a post to a chat), kept as a row and sent after the answer.
+export interface Work {
+    /** ADAPT: the app's own names, such as 'notify_support'. */
+    kind: string;
+    payload: object; // stored as JSON
+}
+
+// ADAPT: back this with the app's own database. `claim` is ONE atomic write: in one transaction,
+// insert the id under a unique key and, only when it is new, the rows of `work` (the outbox).
+// Never a read followed by a write: two deliveries of the same event can arrive at the same moment.
+export interface EventStore {
+    /** True when the id is new and now recorded with its work, false on a repeat (nothing written). */
+    claim(id: string, work: Work[]): Promise<boolean>;
+    /** Forget an id whose handling failed, and its work, so the retry Mesub sends is not dropped. */
+    release(id: string): Promise<void>;
+}
+
+// ADAPT: back this with the app's own table, one row per subscription, keyed by `subscription.id`,
+// with the user it names (`subscription.external_id`, else its email or wallet) in a column.
+// A per-user flag is "any of that user's rows is granted": a wallet coming back makes a new subscription id.
+// `apply` must be ONE conditional write: set `granted` and `sequence` only where the stored
+// sequence is lower (UPDATE ... WHERE last_sequence < $sequence, or an insert when no row).
+export interface AccessStore {
+    /** Record the access an access event set, unless a higher sequence was already applied. */
+    apply(subscription: Subscription, sequence: number, granted: boolean, changedAt: string): Promise<void>;
+    /** An event without `sequence` cannot be placed: read the state now (mesub.subscriptions.retrieve) and record it. */
+    refresh(subscription: Subscription): Promise<void>;
+}
+
+// What the handler needs from the app, handed in by the route.
+export interface EventDeps {
+    store: EventStore;
+    // Optional: leave it out when the app asks `hasAccess` on each request. The access events are
+    // then acknowledged and dropped, which is right: hasAccess already answers what they say.
+    access?: AccessStore;
+}
+
+// A delivery sent by hand from the dashboard carries `test: true` and the subscription `sub_test`.
+function isTest(event: WebhookEvent): boolean {
+    return event.test === true || event.data.id === 'sub_test';
+}
+
+// The event's own fields, at the top of the body. The SDK moves the `detail` of a body written before
+// `available_since` there too. Read loosely: a type Mesub adds later has a detail this code does not know.
+function detailOf(event: WebhookEvent): Record<string, unknown> {
+    const detail: unknown = event.detail;
+    return typeof detail === 'object' && detail !== null ? (detail as Record<string, unknown>) : {};
+}
+
+// The SDK checks this event's detail: can_pay, renewal_issue, amount, mint, due_at.
+function renewalUpcomingOf(event: WebhookEvent): RenewalUpcomingDetail | null {
+    return event.type === 'subscription.renewal_upcoming' ? event.detail : null;
+}
+
+// Its place among the subscription's events, or null on a body Mesub did not number.
+function sequenceOf(event: WebhookEvent): number | null {
+    const sequence: unknown = event.sequence;
+    return typeof sequence === 'number' && Number.isInteger(sequence) && sequence >= 1 ? sequence : null;
+}
+
+// subscription.access_granted and subscription.access_revoked: the only events that say whether the
+// customer has access.
+function isAccessEvent(event: WebhookEvent): boolean {
+    return event.type === 'subscription.access_granted' || event.type === 'subscription.access_revoked';
+}
+
+async function applyAccess(event: WebhookEvent, access: AccessStore): Promise<void> {
+    const type = event.type;
+
+    const sequence = sequenceOf(event);
+    if (sequence === null) {
+        await access.refresh(event.data);
+        return;
+    }
+    // detailOf(event) also holds blocked_reason and access_until on newer events: optional, null or absent.
+    const changedAt = detailOf(event).changed_at;
+    await access.apply(
+        event.data,
+        sequence,
+        type === 'subscription.access_granted',
+        typeof changedAt === 'string' ? changedAt : event.created_at,
+    );
+}
+
+/**
+ * Call it with the event `verify` handed back, never with a body read any other way.
+ * It throws when the handling failed: answer a 5xx then, and Mesub sends the event again.
+ */
+export async function receiveEvent(event: WebhookEvent, deps: EventDeps): Promise<void> {
+    if (isTest(event)) return;
+    // The same on every retry: the event's id (what GET /v1/events serves), null on a body written
+    // before api_version 2026-10-02, then the delivery's id (webhook-id). See references/delivery.md.
+    const id = event.id ?? event.delivery_id;
+    // The work is decided first, from the event alone, so the claim records it in the same write.
+    const work = isAccessEvent(event) ? [] : workFor(event);
+    if (!(await deps.store.claim(id, work))) return;
+    if (!isAccessEvent(event) || !deps.access) return;
+
+    try {
+        await applyAccess(event, deps.access);
+    } catch (error) {
+        await deps.store.release(id);
+        throw error;
+    }
+}
+
+/**
+ * An event read back from GET /v1/events (`mesub.events.list`, to catch up after an outage), shaped
+ * for receiveEvent. It came in no delivery, so its own id stands in for `delivery_id`: deduplication
+ * keys on `event.id` first, so a delivery of the same event is still dropped.
+ */
+export function fromEventsList(event: MesubEvent): WebhookEvent {
+    return { ...event, delivery_id: event.id } as WebhookEvent;
+}
+
+// ADAPT: keep the branches the app needs. Each one only DECIDES the work, from the event, and
+// returns it: the claim records it in the outbox in one write, and the app's drainer sends it after
+// the answer (references/delivery.md). Mesub waits 10 seconds. Never grant or revoke access here:
+// only the two access events above do, or `hasAccess` on each request.
+function workFor(event: WebhookEvent): Work[] {
+    const upcoming = renewalUpcomingOf(event);
+    if (upcoming) {
+        // A reading of the wallet, not a promise: the charge itself answers later.
+        // upcoming.can_pay, upcoming.renewal_issue, upcoming.amount, upcoming.due_at
+        return [];
+    }
+
+    switch (event.type) {
+        case 'subscription.paused':
+        case 'subscription.unpaused':
+            // A seat parked over the project's own tier cap (paused) or back under it (unpaused), never
+            // the subscriber's choice: tell the merchant, not the customer. Access follows from the access events.
+            return [];
+        case 'subscription.created':
+            // The first payment landed. event.data is the subscription; detailOf(event).first_payment
+            // is { amount, mint, signature }, null when none was recorded.
+            return [];
+        case 'subscription.renewed':
+            // detailOf(event): amount, mint, period_start, period_end, signature
+            return [];
+        case 'subscription.payment_failed':
+            // detailOf(event): reason, retries_left, next_retry_at, retry_mode. For example:
+            // return [{ kind: 'notify_support', payload: { subscription: event.data.id, reason: detailOf(event).reason } }];
+            return [];
+        case 'subscription.stopped':
+            // Mesub stopped charging. Branch on event.data.stop_reason, not on detailOf(event).reason:
+            // 'authority_closed' cannot come back and can be closed now (event.data.closable);
+            // 'out_of_retries' and 'retry_deadline_passed' can subscribe again. Keep a default.
+            return [];
+        case 'subscription.cancelled':
+            // Access runs until event.data.access_until: do not cut it now.
+            return [];
+        case 'subscription.resumed':
+            return [];
+        case 'subscription.ended':
+            // event.data.end_reason says why: 'cancelled', 'closed', 'closed_elsewhere', 'plan_ended', ...
+            // One subscription can end twice: 'cancelled' at a cancellation's end, then 'closed'.
+            return [];
+        case 'subscription.expired':
+            return [];
+        case 'subscription.access_granted':
+        case 'subscription.access_revoked':
+        case 'subscription.renewal_upcoming':
+            // Handled above.
+            return [];
+        default:
+            // A type this code does not know: acknowledge it, never throw on it.
+            return [];
+    }
+}

@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "skills": {
+    "mesub-errors": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-errors/SKILL.md",
+      "computedHash": "20feb1df37d82f5337ef00c010f4f597cb51302a0057fa3900a6e77f68756d5a"
+    },
+    "mesub-gate-access": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-gate-access/SKILL.md",
+      "computedHash": "2a512c63aa2bfa3ebda7fb0dd20ebd429d881dd0c541d11b8be28806bc8dd444"
+    },
+    "mesub-mcp": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-mcp/SKILL.md",
+      "computedHash": "4e28a2adad0ee32bf00cb9d3028df66faf7a2efc6f3c602cba31baabc798b1f5"
+    },
+    "mesub-quickstart": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-quickstart/SKILL.md",
+      "computedHash": "1595fb905863e9770c87eb730be9369a535833a94ebbf7f786a51379b21574bb"
+    },
+    "mesub-subscribe-and-manage": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-subscribe-and-manage/SKILL.md",
+      "computedHash": "a1ac274dc1837e6ce07ec7025da0c12c2559240b8b6f7f2eaeff7d13021a8438"
+    },
+    "mesub-testing": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-testing/SKILL.md",
+      "computedHash": "aa7d1fad6a527f0d2717b04e7e7ae9e1781ed9b882c80906627355f302c31304"
+    },
+    "mesub-webhooks": {
+      "source": "Mesub-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesub-webhooks/SKILL.md",
+      "computedHash": "9125a02113ffa32c7dcc1c926db06680194f30392f5efc4372877df9614e321b"
+    }
+  }
+}

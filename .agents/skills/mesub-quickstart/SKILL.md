@@ -1,0 +1,114 @@
+---
+name: mesub-quickstart
+description: Use this skill when a project with no Mesub code yet must start taking subscriptions or recurring payments on Solana, even if the user just says "users should pay monthly" or "add a paywall". Covers the first setup of @mesub/node and @mesub/react on Express, Next.js or NestJS (MESUB_API_KEY, mesubRoutes, requirePlan, withMesub, MesubProvider, SubscribeButton), checking it end to end, and the directory of every Mesub skill.
+compatibility: Node 22 or later. Express 4 or 5, Next.js 14 or later (App Router) or NestJS 10 or later. React 18 or 19 for the widget.
+license: Apache-2.0
+---
+
+# Mesub Quickstart
+
+## Overview
+
+This skill takes a project from no Mesub code to one paying subscriber: the packages, the API key, the widget's routes, one paid route and the subscribe button. It also carries the kit's directory.
+
+## When to use this skill
+
+- The project has no Mesub code and the user wants subscriptions, recurring payments or a paid area.
+- A setup exists and must be checked from the packages to the button.
+- You need to know which Mesub skill owns a task: `references/kit-directory.md`.
+
+## Do not use this skill when
+
+- The setup works and the task is one paid route's rules, its refusals or its outage behaviour.
+- The task is the subscribe or manage window itself, or subscribing from the server.
+- The task is receiving events, testing, or reading an error code.
+
+`references/kit-directory.md` names the owner of each, and what to read when it is not installed.
+
+## Core guidance
+
+### Five facts to hold first
+
+1. **The subscriber has no Mesub account.** Who they are comes from the app's own login. An app with no login needs one first.
+2. **The API key lives on the server only.** `@mesub/react` holds no key and never talks to Mesub: it calls routes on the app's own server.
+3. **A plan is named by its slug**, read in the dashboard, never guessed. Price, token and period live in the dashboard.
+4. **Mesub charges every period by itself.** No cron, no job, no renewal code in the app.
+5. **On the Free tier**: one plan, 30 subscribers, no automatic retry, and no access while a payment is late. Tell the user: `references/steps.md`.
+
+### The six steps
+
+Do them in order. Read each step in `references/steps.md` before writing its code.
+
+0. **Read the project, ask the user.** Find the framework and how a request learns who the user is. Check what is installed. Ask for the plan's slug; ask the user to set `MESUB_API_KEY` on the server themselves, plus `MESUB_BASE_URL` only if Mesub gave another API address.
+1. **The API key and the one client.** `new Mesub()` reads `MESUB_API_KEY` by itself. Build it once (`assets/mesub-client.ts`), pass it as `client` everywhere. Without the key it throws at import, so a Next.js build needs it too. Confirm the env file is ignored by git.
+2. **Install** `@mesub/node` (in `dependencies`) and `@mesub/react` from npm, with the project's own package manager.
+3. **Mount the routes the widget calls** at `/api/mesub`, after the app's login: `assets/express-mesub.ts` or `assets/next-mesub-route.ts`.
+4. **Gate one paid route** on the server: `assets/express-mesub.ts`, `assets/next-paid-route.ts` or `assets/nest-paid.controller.ts`.
+5. **The provider and the button**: `assets/mesub-provider.tsx`, then `assets/subscribe-button.tsx`. Its `endpoint` is exactly the path of step 3. Mesub runs on mainnet: set `chain="solana:mainnet"` (never `solana:mainnet-beta`), or the wallet signs elsewhere.
+6. **Check**: run the script below, then go through `checks/verification.md`.
+
+Copy an asset, adapt its `ADAPT` lines. What each framework needs beyond that: `references/frameworks.md`.
+
+### Rules that are never negotiable
+
+- **Never ask for the API key in the conversation, and never write its value anywhere.** Check that the name is set without reading the value. Why: a pasted or committed key is leaked and must be rotated.
+- **Never give the key a browser prefix** (`NEXT_PUBLIC_`, `VITE_` and the like), never import it in client code, never log it. Say "API key".
+- **`customer` comes from a session the app verified, never from the request itself**: not the query, the body, a header or a wallet the page sends. Why: an id read from the request lets anyone type a subscriber's id and get their access. Return `null` when nobody is signed in.
+- **Name the customer the same way everywhere**, by `external_id`, the app's own id for the user. Otherwise a subscription made under one name is not found under the other.
+- **If an install says a package does not exist, stop and tell the user**: `references/steps.md`, step 2. No lookalike, no copied SDK source, no raw HTTP calls instead. Why: a lookalike package is how a key gets stolen.
+- **Gate on the server.** Hiding a button is not a gate.
+- **Do not catch the check's errors as "not subscribed"**, do not cache its answer, and do not store "is subscribed" in the app's database. The SDK caches and handles an outage itself; a wrong key or slug throws on purpose.
+- **Do not build the subscribe flow or add a wallet library.** The widget does both.
+- **Before using an option this skill does not show, read it in the installed package** (`node_modules/@mesub/node/README.md` and its types). Never write a call from memory.
+
+### The check
+
+From the project root:
+
+```bash
+node "<skill-dir>/scripts/check-setup.mjs"
+```
+
+`<skill-dir>` is this skill's folder, absolute: do not change into it. Add `--server-only` for a project with no React front, `--no-gate-yet` while no route is gated.
+
+**The subscription itself needs a person with a wallet**, who approves twice in the window. Report it as wired and checked up to the window, never as tested end to end, and say what the user must click. When something fails on the first run, read `references/first-run-failures.md`.
+
+## Related skills
+
+<!-- related:start -->
+<!-- Rendered from catalog.yaml by `pnpm render`. Do not edit. -->
+This skill works alone: never assume another is installed. A task outside it: name its owner, from `references/kit-directory.md`. Not installed: install it only on the user's yes, else stop and say so. Going on without it is the user's call, keeping its rule:
+
+- `mesub-gate-access`: gate on the server; an error is never "not subscribed".
+- `mesub-subscribe-and-manage`: the widget subscribes; never hand-make that flow.
+- `mesub-webhooks`: verify the raw body's signature; deduplicate on the event id.
+- `mesub-testing`: never mock `@mesub/node`: a seam and `FakeMesub`.
+- `mesub-errors`: branch on `apiCode`, never a message; never loop on `retryable`.
+- `mesub-mcp`: ask before any change; never an API key.
+<!-- related:end -->
+
+## References
+
+- `references/steps.md`: each of the six steps in full, with its reasons.
+- `references/frameworks.md`: what Express, Next.js and NestJS each need, plus bearer tokens, another origin and the edge runtime.
+- `references/first-run-failures.md`: what is seen on a first run, what it means and what to do.
+- `references/docs.md`: the docs pages behind this skill, and when to read them.
+- `references/kit-directory.md`: every skill of the kit, its install and docs.
+
+## Assets
+
+- `assets/mesub-client.ts`: the one client of the process, given to every route and guard.
+- `assets/express-mesub.ts`: the widget routes and a guard, for Express and the `main.ts` of NestJS.
+- `assets/next-mesub-route.ts`: the widget routes as an App Router catch-all.
+- `assets/next-paid-route.ts`: one paid App Router route.
+- `assets/nest-paid.controller.ts`: one paid NestJS controller.
+- `assets/mesub-provider.tsx`: the provider and the stylesheet.
+- `assets/subscribe-button.tsx`: the subscribe button for one plan.
+
+## Scripts
+
+- `scripts/check-setup.mjs`: reads the project and reports whether the packages, the key, the routes, a gated route, the provider and the button are in place. Read-only, no network, never shows a key. Usage above.
+
+## Checks
+
+- `checks/verification.md`: the runbook before saying the work is done.
